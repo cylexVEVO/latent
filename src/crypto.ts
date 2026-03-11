@@ -5,15 +5,15 @@ const PBKDF2_ITERATIONS = 310_000;
 const SALT_BYTES = 16;
 const IV_BYTES = 12;
 
-function b64Encode(buf: ArrayBuffer): string {
-  return btoa(String.fromCharCode(...new Uint8Array(buf)));
+function b64Encode(buf: Uint8Array): string {
+  return btoa(String.fromCharCode(...buf));
 }
 
-function b64Decode(str: string): Uint8Array {
+function b64Decode(str: string): Uint8Array<ArrayBuffer> {
   return Uint8Array.from(atob(str), (c) => c.charCodeAt(0));
 }
 
-async function deriveKey(password: string, salt: Uint8Array): Promise<CryptoKey> {
+async function deriveKey(password: string, salt: Uint8Array<ArrayBuffer>): Promise<CryptoKey> {
   const enc = new TextEncoder();
   const keyMaterial = await crypto.subtle.importKey(
     "raw",
@@ -50,7 +50,7 @@ export async function encrypt(plaintext: string, password: string): Promise<Encr
   return {
     salt: b64Encode(salt),
     iv: b64Encode(iv),
-    ct: b64Encode(ciphertext),
+    ct: b64Encode(new Uint8Array(ciphertext)),
   };
 }
 
