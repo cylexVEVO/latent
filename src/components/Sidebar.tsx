@@ -10,6 +10,8 @@ interface Props {
   activeTag: string | null;
   activeFolderId: string | "unfiled" | null;
   selectedId: string | null;
+  sidebarOpen: boolean;
+  onClose: () => void;
   onSelect: (id: string) => void;
   onNew: (folderId?: string) => void;
   onTagFilter: (tag: string) => void;
@@ -31,8 +33,8 @@ function NoteRow({ note, selected, onSelect }: { note: Note; selected: boolean; 
   return (
     <button
       onClick={onSelect}
-      className={`w-full text-left px-4 py-2.5 border-b border-neutral-100 transition-colors cursor-pointer ${
-        selected ? "bg-neutral-900 text-white" : "hover:bg-neutral-100 text-neutral-700"
+      className={`w-full text-left px-4 py-3 border-b border-neutral-100 transition-colors cursor-pointer touch-manipulation ${
+        selected ? "bg-neutral-900 text-white" : "hover:bg-neutral-100 active:bg-neutral-100 text-neutral-700"
       }`}
     >
       <div className="text-sm truncate font-medium">{note.title || "Untitled"}</div>
@@ -46,7 +48,7 @@ function NoteRow({ note, selected, onSelect }: { note: Note; selected: boolean; 
 
 export default function Sidebar({
   notes, allNotes, folders, allTags, activeTag, activeFolderId,
-  selectedId, onSelect, onNew, onTagFilter, onFolderSelect,
+  selectedId, sidebarOpen, onClose, onSelect, onNew, onTagFilter, onFolderSelect,
   onFolderAdd, onFolderRename, onFolderDelete, onExport, onLock, onChangePassword, exporting,
 }: Props) {
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
@@ -101,24 +103,31 @@ export default function Sidebar({
   const visibleUnfiled = notes.filter((n) => !n.folderId);
 
   return (
-    <div className="flex flex-col h-full w-56 shrink-0 border-r border-neutral-200 bg-neutral-50">
+    <div className={`flex flex-col h-full border-r border-neutral-200 bg-neutral-50 shrink-0 w-72 md:w-56 fixed inset-y-0 left-0 z-40 transition-transform duration-200 md:relative md:z-auto md:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}>
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-neutral-200">
         <span className="text-xs font-medium text-neutral-500 uppercase tracking-wider">Notes</span>
         <div className="flex items-center gap-2">
           <button
             onClick={startAddFolder}
-            className="text-neutral-400 hover:text-neutral-900 text-xs transition-colors cursor-pointer"
+            className="text-neutral-400 hover:text-neutral-900 active:text-neutral-900 text-xs transition-colors cursor-pointer py-1 touch-manipulation"
             title="New folder"
           >
             + folder
           </button>
           <button
             onClick={() => onNew(activeFolderId && activeFolderId !== "unfiled" ? activeFolderId : undefined)}
-            className="text-neutral-400 hover:text-neutral-900 text-lg leading-none cursor-pointer transition-colors"
+            className="text-neutral-400 hover:text-neutral-900 active:text-neutral-900 text-lg leading-none cursor-pointer transition-colors p-1 touch-manipulation"
             title="New note"
           >
             +
+          </button>
+          <button
+            onClick={onClose}
+            className="md:hidden text-neutral-400 active:text-neutral-900 text-lg leading-none cursor-pointer p-1 touch-manipulation"
+            aria-label="Close sidebar"
+          >
+            ×
           </button>
         </div>
       </div>
@@ -205,10 +214,10 @@ export default function Sidebar({
                 )}
 
                 {/* Actions: + note, … menu */}
-                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="flex items-center gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                   <button
                     onClick={(e) => { e.stopPropagation(); onNew(folder.id); }}
-                    className="text-neutral-400 hover:text-neutral-700 text-sm cursor-pointer leading-none"
+                    className="text-neutral-400 hover:text-neutral-700 active:text-neutral-700 text-sm cursor-pointer leading-none p-1 touch-manipulation"
                     title="New note in folder"
                   >
                     +
@@ -216,7 +225,7 @@ export default function Sidebar({
                   <div className="relative">
                     <button
                       onClick={(e) => { e.stopPropagation(); setMenuOpenId(menuOpen ? null : folder.id); }}
-                      className="text-neutral-400 hover:text-neutral-700 text-xs cursor-pointer px-0.5"
+                      className="text-neutral-400 hover:text-neutral-700 active:text-neutral-700 text-xs cursor-pointer px-1 py-1 touch-manipulation"
                     >
                       ···
                     </button>

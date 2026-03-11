@@ -26,6 +26,7 @@ export default function App() {
   const [changingPassword, setChangingPassword] = useState(false);
   const [activeTag, setActiveTag] = useState<string | null>(null);
   const [activeFolderId, setActiveFolderId] = useState<string | "unfiled" | null>(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   function handleUnlock(notes: Note[], folders: Folder[], password: string) {
     setState({ phase: "unlocked", notes, folders, password });
@@ -157,6 +158,13 @@ export default function App() {
 
   return (
     <div className="flex h-screen bg-white text-neutral-900 overflow-hidden">
+      {/* Mobile backdrop */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/20 z-30 md:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
       <Sidebar
         notes={visibleNotes}
         allNotes={notes}
@@ -165,7 +173,9 @@ export default function App() {
         activeTag={activeTag}
         activeFolderId={activeFolderId}
         selectedId={selectedId}
-        onSelect={setSelectedId}
+        sidebarOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+        onSelect={(id) => { setSelectedId(id); setSidebarOpen(false); }}
         onNew={addNote}
         onTagFilter={(t) => { setActiveTag((x) => (x === t ? null : t)); setSelectedId(null); }}
         onFolderSelect={(id) => { setActiveFolderId((x) => (x === id ? null : id)); setSelectedId(null); }}
@@ -177,21 +187,38 @@ export default function App() {
         onChangePassword={() => setChangingPassword(true)}
         exporting={exporting}
       />
-      <main className="flex-1 overflow-hidden">
-        {selected ? (
-          <NoteEditor
-            key={selected.id}
-            note={selected}
-            folders={folders}
-            onChange={updateNote}
-            onDelete={deleteNote}
-            onMoveToFolder={(folderId) => moveNote(selected.id, folderId)}
-          />
-        ) : (
-          <div className="flex items-center justify-center h-full text-neutral-300 text-sm">
-            {notes.length === 0 ? "No notes. Hit + to start." : "Select a note."}
-          </div>
-        )}
+      <main className="flex-1 overflow-hidden flex flex-col min-w-0">
+        {/* Mobile top bar */}
+        <div className="md:hidden flex items-center gap-3 px-4 py-3 border-b border-neutral-100 shrink-0">
+          <button
+            onClick={() => setSidebarOpen(true)}
+            className="text-neutral-500 active:text-neutral-900 p-1 -ml-1 touch-manipulation"
+            aria-label="Open sidebar"
+          >
+            <svg width="18" height="14" viewBox="0 0 18 14" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round">
+              <line x1="0" y1="1" x2="18" y2="1"/>
+              <line x1="0" y1="7" x2="18" y2="7"/>
+              <line x1="0" y1="13" x2="18" y2="13"/>
+            </svg>
+          </button>
+          <span className="text-sm font-medium text-neutral-400 tracking-wide">latent</span>
+        </div>
+        <div className="flex-1 overflow-hidden">
+          {selected ? (
+            <NoteEditor
+              key={selected.id}
+              note={selected}
+              folders={folders}
+              onChange={updateNote}
+              onDelete={deleteNote}
+              onMoveToFolder={(folderId) => moveNote(selected.id, folderId)}
+            />
+          ) : (
+            <div className="flex items-center justify-center h-full text-neutral-300 text-sm">
+              {notes.length === 0 ? "No notes. Hit + to start." : "Select a note."}
+            </div>
+          )}
+        </div>
       </main>
       {exportBlob && (
         <ExportModal blob={exportBlob} onClose={() => setExportBlob(null)} />

@@ -52,7 +52,7 @@ export default function NoteEditor({ note, folders, onChange, onDelete, onMoveTo
   return (
     <div className="flex flex-col h-full bg-white">
       {/* Title */}
-      <div className="flex items-center gap-4 px-8 py-4 border-b border-neutral-100">
+      <div className="flex items-center gap-3 px-4 py-3 md:px-8 md:py-4 border-b border-neutral-100">
         <input
           className="flex-1 text-neutral-900 text-base font-medium outline-none placeholder-neutral-200"
           placeholder="Untitled"
@@ -74,7 +74,7 @@ export default function NoteEditor({ note, folders, onChange, onDelete, onMoveTo
         )}
         <button
           onClick={onDelete}
-          className="text-neutral-300 hover:text-red-400 text-xs transition-colors cursor-pointer"
+          className="text-neutral-300 hover:text-red-400 active:text-red-400 text-xs transition-colors cursor-pointer touch-manipulation shrink-0"
         >
           Delete
         </button>
@@ -82,7 +82,7 @@ export default function NoteEditor({ note, folders, onChange, onDelete, onMoveTo
 
       {/* Tags */}
       <div
-        className="flex flex-wrap items-center gap-1.5 px-8 py-2 border-b border-neutral-100 cursor-text min-h-[36px]"
+        className="flex flex-wrap items-center gap-1.5 px-4 py-2 md:px-8 border-b border-neutral-100 cursor-text min-h-[36px]"
         onClick={() => tagRef.current?.focus()}
       >
         {tags.map((tag) => (

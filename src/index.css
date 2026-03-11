@@ -1,2 +1,8 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
+
+@media (max-width: 767px) {
+  .cm-scroller {
+    padding: 16px !important;
+  }
+}
