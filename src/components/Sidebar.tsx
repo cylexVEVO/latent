@@ -19,6 +19,7 @@ interface Props {
   onFolderDelete: (id: string) => void;
   onExport: () => void;
   onLock: () => void;
+  onChangePassword: () => void;
   exporting: boolean;
 }
 
@@ -46,7 +47,7 @@ function NoteRow({ note, selected, onSelect }: { note: Note; selected: boolean; 
 export default function Sidebar({
   notes, allNotes, folders, allTags, activeTag, activeFolderId,
   selectedId, onSelect, onNew, onTagFilter, onFolderSelect,
-  onFolderAdd, onFolderRename, onFolderDelete, onExport, onLock, exporting,
+  onFolderAdd, onFolderRename, onFolderDelete, onExport, onLock, onChangePassword, exporting,
 }: Props) {
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
   const [renamingId, setRenamingId] = useState<string | null>(null);
@@ -309,12 +310,20 @@ export default function Sidebar({
             ?
           </button>
         </div>
-        <button
-          onClick={onLock}
-          className="w-full text-neutral-400 hover:text-neutral-600 text-xs py-1.5 transition-colors cursor-pointer"
-        >
-          Lock &amp; clear
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={onLock}
+            className="flex-1 text-neutral-400 hover:text-neutral-600 text-xs py-1.5 transition-colors cursor-pointer"
+          >
+            Lock &amp; clear
+          </button>
+          <button
+            onClick={onChangePassword}
+            className="flex-1 text-neutral-400 hover:text-neutral-600 text-xs py-1.5 transition-colors cursor-pointer"
+          >
+            Change password
+          </button>
+        </div>
       </div>
 
       {showCheatSheet && <CheatSheet onClose={() => setShowCheatSheet(false)} />}

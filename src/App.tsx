@@ -5,6 +5,7 @@ import UnlockScreen from "./components/UnlockScreen";
 import Sidebar from "./components/Sidebar";
 import NoteEditor from "./components/NoteEditor";
 import ExportModal from "./components/ExportModal";
+import ChangePasswordModal from "./components/ChangePasswordModal";
 
 function newNote(folderId?: string): Note {
   return {
@@ -22,6 +23,7 @@ export default function App() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [exportBlob, setExportBlob] = useState<string | null>(null);
   const [exporting, setExporting] = useState(false);
+  const [changingPassword, setChangingPassword] = useState(false);
   const [activeTag, setActiveTag] = useState<string | null>(null);
   const [activeFolderId, setActiveFolderId] = useState<string | "unfiled" | null>(null);
 
@@ -138,6 +140,13 @@ export default function App() {
     }
   }
 
+  function handleChangePassword(newPassword: string) {
+    setState((s) =>
+      s.phase === "unlocked" ? { ...s, password: newPassword } : s
+    );
+    setChangingPassword(false);
+  }
+
   function handleLock() {
     setState({ phase: "locked" });
     setSelectedId(null);
@@ -165,6 +174,7 @@ export default function App() {
         onFolderDelete={deleteFolder}
         onExport={handleExport}
         onLock={handleLock}
+        onChangePassword={() => setChangingPassword(true)}
         exporting={exporting}
       />
       <main className="flex-1 overflow-hidden">
@@ -185,6 +195,13 @@ export default function App() {
       </main>
       {exportBlob && (
         <ExportModal blob={exportBlob} onClose={() => setExportBlob(null)} />
+      )}
+      {changingPassword && (
+        <ChangePasswordModal
+          currentPassword={password}
+          onConfirm={handleChangePassword}
+          onClose={() => setChangingPassword(false)}
+        />
       )}
     </div>
   );
