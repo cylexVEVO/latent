@@ -5,7 +5,7 @@ interface Props {
 
 export default function ExportModal({ blob, onClose }: Props) {
   function download() {
-    const url = URL.createObjectURL(new Blob([blob], { type: "application/octet-stream" }));
+    const url = URL.createObjectURL(new Blob([blob.buffer as ArrayBuffer], { type: "application/octet-stream" }));
     const a = document.createElement("a");
     a.href = url;
     a.download = `vault-${Date.now()}.enc`;
