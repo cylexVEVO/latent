@@ -1,3 +1,12 @@
+export interface Attachment {
+  id: string;
+  name: string;
+  mimeType: string;
+  data: string;      // base64-encoded file contents
+  size: number;
+  createdAt: number;
+}
+
 export interface Folder {
   id: string;
   name: string;
@@ -10,6 +19,7 @@ export interface Note {
   body: string;
   tags: string[];
   folderId?: string; // undefined = unfiled
+  attachments?: Attachment[];
   updatedAt: number;
 }
 

@@ -57,6 +57,7 @@ export default function Sidebar({
   const [addingFolder, setAddingFolder] = useState(false);
   const [newFolderName, setNewFolderName] = useState("");
   const [menuOpenId, setMenuOpenId] = useState<string | null>(null);
+  const [addMenuOpen, setAddMenuOpen] = useState(false);
   const [showCheatSheet, setShowCheatSheet] = useState(false);
   const newFolderRef = useRef<HTMLInputElement>(null);
   const renameRef = useRef<HTMLInputElement>(null);
@@ -107,21 +108,39 @@ export default function Sidebar({
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-neutral-200">
         <span className="text-xs font-medium text-neutral-500 uppercase tracking-wider">Notes</span>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={startAddFolder}
-            className="text-neutral-400 hover:text-neutral-900 active:text-neutral-900 text-xs transition-colors cursor-pointer py-1 touch-manipulation"
-            title="New folder"
-          >
-            + folder
-          </button>
-          <button
-            onClick={() => onNew(activeFolderId && activeFolderId !== "unfiled" ? activeFolderId : undefined)}
-            className="text-neutral-400 hover:text-neutral-900 active:text-neutral-900 text-lg leading-none cursor-pointer transition-colors p-1 touch-manipulation"
-            title="New note"
-          >
-            +
-          </button>
+        <div className="flex items-center gap-1">
+          {/* Combined add button with dropdown */}
+          <div className="relative">
+            <button
+              onClick={(e) => { e.stopPropagation(); setAddMenuOpen((o) => !o); }}
+              className="text-neutral-400 hover:text-neutral-900 active:text-neutral-900 text-lg leading-none cursor-pointer transition-colors p-1 touch-manipulation"
+              title="New…"
+            >
+              +
+            </button>
+            {addMenuOpen && (
+              <div
+                className="absolute right-0 top-full mt-1 bg-white border border-neutral-200 rounded shadow-sm z-20 w-36"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button
+                  onClick={() => {
+                    setAddMenuOpen(false);
+                    onNew(activeFolderId && activeFolderId !== "unfiled" ? activeFolderId : undefined);
+                  }}
+                  className="w-full text-left px-3 py-1.5 text-xs text-neutral-600 hover:bg-neutral-50 cursor-pointer"
+                >
+                  New note
+                </button>
+                <button
+                  onClick={() => { setAddMenuOpen(false); startAddFolder(); }}
+                  className="w-full text-left px-3 py-1.5 text-xs text-neutral-600 hover:bg-neutral-50 cursor-pointer"
+                >
+                  New folder
+                </button>
+              </div>
+            )}
+          </div>
           <button
             onClick={onClose}
             className="md:hidden text-neutral-400 active:text-neutral-900 text-lg leading-none cursor-pointer p-1 touch-manipulation"
@@ -152,7 +171,7 @@ export default function Sidebar({
       )}
 
       {/* Note / folder list */}
-      <div className="flex-1 overflow-y-auto" onClick={() => setMenuOpenId(null)}>
+      <div className="flex-1 overflow-y-auto" onClick={() => { setMenuOpenId(null); setAddMenuOpen(false); }}>
         {!hasFolders && notes.length === 0 && (
           <p className="text-neutral-300 text-xs text-center mt-8 px-4">No notes yet.</p>
         )}
@@ -174,18 +193,25 @@ export default function Sidebar({
             <div key={folder.id}>
               {/* Folder header */}
               <div
-                className={`group flex items-center gap-1 px-3 py-2 border-b border-neutral-100 ${
+                className={`group flex items-center gap-1 px-3 py-2 border-b border-neutral-100 cursor-pointer select-none ${
                   isActive ? "bg-neutral-100" : "hover:bg-neutral-100"
                 }`}
+                onClick={() => toggleCollapsed(folder.id)}
               >
                 {/* Chevron */}
-                <button
-                  onClick={(e) => { e.stopPropagation(); toggleCollapsed(folder.id); }}
-                  className="text-neutral-300 hover:text-neutral-600 cursor-pointer w-4 shrink-0 text-xs"
+                <svg
+                  width="10"
+                  height="10"
+                  viewBox="0 0 10 10"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className={`text-neutral-300 shrink-0 transition-transform ${isCollapsed ? "" : "rotate-90"}`}
                 >
-                  {isCollapsed ? "›" : "›"}
-                  <span className={`inline-block transition-transform ${isCollapsed ? "" : "rotate-90"}`}>›</span>
-                </button>
+                  <polyline points="3,2 7,5 3,8" />
+                </svg>
 
                 {/* Name / rename input */}
                 {isRenaming ? (
@@ -202,15 +228,12 @@ export default function Sidebar({
                     onClick={(e) => e.stopPropagation()}
                   />
                 ) : (
-                  <button
-                    onClick={() => onFolderSelect(folder.id)}
-                    className="flex-1 text-left text-xs font-medium text-neutral-600 truncate cursor-pointer"
-                  >
+                  <span className="flex-1 text-left text-xs font-medium text-neutral-600 truncate">
                     {folder.name}
                     <span className="ml-1 text-neutral-300 font-normal">
                       {allNotes.filter((n) => n.folderId === folder.id).length}
                     </span>
-                  </button>
+                  </span>
                 )}
 
                 {/* Actions: + note, … menu */}

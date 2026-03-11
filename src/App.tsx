@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { encrypt, serializeBlob } from "./crypto";
+import { encrypt, serializeBlobBinary } from "./crypto";
 import type { AppState, Folder, Note } from "./types";
 import UnlockScreen from "./components/UnlockScreen";
 import Sidebar from "./components/Sidebar";
@@ -21,7 +21,7 @@ function newNote(folderId?: string): Note {
 export default function App() {
   const [state, setState] = useState<AppState>({ phase: "locked" });
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [exportBlob, setExportBlob] = useState<string | null>(null);
+  const [exportBlob, setExportBlob] = useState<Uint8Array | null>(null);
   const [exporting, setExporting] = useState(false);
   const [changingPassword, setChangingPassword] = useState(false);
   const [activeTag, setActiveTag] = useState<string | null>(null);
@@ -135,7 +135,7 @@ export default function App() {
     try {
       const payload = { version: 2, notes, folders };
       const blob = await encrypt(JSON.stringify(payload), password);
-      setExportBlob(serializeBlob(blob));
+      setExportBlob(serializeBlobBinary(blob));
     } finally {
       setExporting(false);
     }

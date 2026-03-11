@@ -6,7 +6,9 @@ const SALT_BYTES = 16;
 const IV_BYTES = 12;
 
 function b64Encode(buf: Uint8Array): string {
-  return btoa(String.fromCharCode(...buf));
+  let binary = "";
+  for (let i = 0; i < buf.byteLength; i++) binary += String.fromCharCode(buf[i]);
+  return btoa(binary);
 }
 
 function b64Decode(str: string): Uint8Array<ArrayBuffer> {
@@ -63,9 +65,35 @@ export async function decrypt(blob: EncryptedBlob, password: string): Promise<st
   return new TextDecoder().decode(plain);
 }
 
-export function serializeBlob(blob: EncryptedBlob): string {
-  return btoa(JSON.stringify(blob));
+// ── Binary format (v1) ───────────────────────────────────────────────────────
+// [1 byte: version=1][16 bytes: salt][12 bytes: IV][...ciphertext]
+// ~1× vault size vs the old base64-of-base64-JSON which was ~3.4×
+
+const BINARY_VERSION = 1;
+
+export function serializeBlobBinary(blob: EncryptedBlob): Uint8Array {
+  const salt = b64Decode(blob.salt);
+  const iv   = b64Decode(blob.iv);
+  const ct   = b64Decode(blob.ct);
+  const out  = new Uint8Array(1 + SALT_BYTES + IV_BYTES + ct.byteLength);
+  out[0] = BINARY_VERSION;
+  out.set(salt, 1);
+  out.set(iv,   1 + SALT_BYTES);
+  out.set(ct,   1 + SALT_BYTES + IV_BYTES);
+  return out;
 }
+
+export function deserializeBlobBinary(buf: Uint8Array): EncryptedBlob {
+  if (buf[0] !== BINARY_VERSION) throw new Error("Unknown vault version");
+  return {
+    salt: b64Encode(buf.slice(1, 1 + SALT_BYTES)),
+    iv:   b64Encode(buf.slice(1 + SALT_BYTES, 1 + SALT_BYTES + IV_BYTES)),
+    ct:   b64Encode(buf.slice(1 + SALT_BYTES + IV_BYTES)),
+  };
+}
+
+// ── Legacy text format ────────────────────────────────────────────────────────
+// Kept for opening old vaults pasted as text.
 
 export function deserializeBlob(raw: string): EncryptedBlob {
   return JSON.parse(atob(raw.trim()));
