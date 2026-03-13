@@ -23,20 +23,20 @@ export default function CheatSheet({ onClose }: Props) {
       onClick={onClose}
     >
       <div
-        className="bg-white border border-neutral-200 rounded w-64 mb-12 ml-0 shadow-sm"
+        className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded w-64 mb-12 ml-0 shadow-sm"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between px-4 py-2.5 border-b border-neutral-100">
+        <div className="flex items-center justify-between px-4 py-2.5 border-b border-neutral-100 dark:border-neutral-800">
           <span className="text-xs font-medium text-neutral-500 uppercase tracking-wider">Markdown</span>
-          <button onClick={onClose} className="text-neutral-300 hover:text-neutral-500 text-xs cursor-pointer">
+          <button onClick={onClose} className="text-neutral-300 dark:text-neutral-600 hover:text-neutral-500 dark:hover:text-neutral-300 text-xs cursor-pointer">
             ✕
           </button>
         </div>
         <div className="px-4 py-3 space-y-2">
           {items.map(([syntax, label]) => (
             <div key={label} className="flex items-baseline justify-between gap-3">
-              <code className="text-xs font-mono text-neutral-500 whitespace-pre">{syntax}</code>
-              <span className="text-xs text-neutral-300 shrink-0">{label}</span>
+              <code className="text-xs font-mono text-neutral-500 dark:text-neutral-400 whitespace-pre">{syntax}</code>
+              <span className="text-xs text-neutral-300 dark:text-neutral-600 shrink-0">{label}</span>
             </div>
           ))}
         </div>

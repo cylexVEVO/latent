@@ -66,3 +66,68 @@ export const minimalTheme = EditorView.theme(
   },
   { dark: false }
 );
+
+export const darkTheme = EditorView.theme(
+  {
+    "&": {
+      height: "100%",
+      fontSize: "14px",
+      fontFamily: "inherit",
+      backgroundColor: "transparent",
+      color: "#e5e5e5",
+    },
+    "&.cm-focused": { outline: "none" },
+    ".cm-scroller": {
+      padding: "20px 32px",
+      lineHeight: "1.75",
+      overflow: "auto",
+      fontFamily: "inherit",
+    },
+    ".cm-content": { padding: 0 },
+    ".cm-line": { padding: 0 },
+    ".cm-cursor": { borderLeftColor: "#e5e5e5" },
+    ".cm-selectionBackground": { backgroundColor: "#404040 !important" },
+    "&.cm-focused .cm-selectionBackground": { backgroundColor: "#525252 !important" },
+    ".cm-activeLine": { backgroundColor: "transparent" },
+    ".cm-gutters": { display: "none" },
+
+    ".cm-md-h1": { fontSize: "1.6em", fontWeight: "700", lineHeight: "1.3" },
+    ".cm-md-h2": { fontSize: "1.35em", fontWeight: "700", lineHeight: "1.35" },
+    ".cm-md-h3": { fontSize: "1.15em", fontWeight: "600" },
+    ".cm-md-h4": { fontWeight: "600" },
+    ".cm-md-bold": { fontWeight: "700" },
+    ".cm-md-italic": { fontStyle: "italic" },
+    ".cm-md-strikethrough": { textDecoration: "line-through" },
+    ".cm-md-inline-code": {
+      fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+      backgroundColor: "#262626",
+      borderRadius: "3px",
+      padding: "0 3px",
+      fontSize: "0.88em",
+    },
+    ".cm-md-code-block": {
+      fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+      fontSize: "0.88em",
+      display: "block",
+    },
+    ".cm-md-code-block-line": {
+      backgroundColor: "#1a1a1a",
+      display: "block",
+      paddingLeft: "12px !important",
+      borderLeft: "2px solid #404040",
+    },
+    ".cm-md-blockquote": {
+      borderLeft: "2px solid #525252",
+      paddingLeft: "12px !important",
+      color: "#a3a3a3",
+    },
+    ".cm-md-link-text": {
+      color: "#60a5fa",
+      textDecoration: "underline",
+      textUnderlineOffset: "2px",
+    },
+    ".cm-md-hr": { color: "#525252" },
+    ".cm-md-syntax": { color: "#525252" },
+  },
+  { dark: true }
+);

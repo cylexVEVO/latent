@@ -9,6 +9,7 @@ interface Props {
   onChange: (updated: Note) => void;
   onDelete: () => void;
   onMoveToFolder: (folderId: string | undefined) => void;
+  onTogglePin: () => void;
 }
 
 function formatSize(bytes: number) {
@@ -70,7 +71,7 @@ async function filesToAttachments(files: File[]): Promise<Attachment[]> {
   );
 }
 
-export default function NoteEditor({ note, folders, onChange, onDelete, onMoveToFolder }: Props) {
+export default function NoteEditor({ note, folders, onChange, onDelete, onMoveToFolder, onTogglePin }: Props) {
   const [title, setTitle] = useState(note.title);
   const [tags, setTags] = useState<string[]>(note.tags);
   const [tagInput, setTagInput] = useState("");
@@ -171,7 +172,7 @@ export default function NoteEditor({ note, folders, onChange, onDelete, onMoveTo
 
   return (
     <div
-      className="flex flex-col h-full bg-white relative"
+      className="flex flex-col h-full bg-white dark:bg-neutral-950 relative"
       onDragEnter={handleDragEnter}
       onDragLeave={handleDragLeave}
       onDragOver={handleDragOver}
@@ -179,15 +180,15 @@ export default function NoteEditor({ note, folders, onChange, onDelete, onMoveTo
     >
       {/* Drag overlay */}
       {isDragging && (
-        <div className="absolute inset-0 z-20 bg-white/90 border-2 border-dashed border-neutral-300 flex items-center justify-center pointer-events-none">
+        <div className="absolute inset-0 z-20 bg-white/90 dark:bg-neutral-950/90 border-2 border-dashed border-neutral-300 dark:border-neutral-600 flex items-center justify-center pointer-events-none">
           <p className="text-sm text-neutral-400">Drop files to attach</p>
         </div>
       )}
 
       {/* Title */}
-      <div className="flex items-center gap-3 px-4 py-3 md:px-8 md:py-4 border-b border-neutral-100">
+      <div className="flex items-center gap-3 px-4 py-3 md:px-8 md:py-4 border-b border-neutral-100 dark:border-neutral-800">
         <input
-          className="flex-1 text-neutral-900 text-base font-medium outline-none placeholder-neutral-200"
+          className="flex-1 text-neutral-900 dark:text-neutral-100 text-base font-medium outline-none placeholder-neutral-200 dark:placeholder-neutral-700 bg-transparent"
           placeholder="Untitled"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
@@ -197,7 +198,7 @@ export default function NoteEditor({ note, folders, onChange, onDelete, onMoveTo
           <select
             value={note.folderId ?? ""}
             onChange={(e) => onMoveToFolder(e.target.value || undefined)}
-            className="text-xs text-neutral-400 bg-transparent outline-none cursor-pointer border-none"
+            className="text-xs text-neutral-400 dark:text-neutral-500 bg-transparent outline-none cursor-pointer border-none"
           >
             <option value="">Unfiled</option>
             {folders.map((f) => (
@@ -205,12 +206,24 @@ export default function NoteEditor({ note, folders, onChange, onDelete, onMoveTo
             ))}
           </select>
         )}
+        {/* Pin button */}
+        <button
+          type="button"
+          onClick={onTogglePin}
+          title={note.pinned ? "Unpin note" : "Pin note"}
+          className={`transition-colors cursor-pointer touch-manipulation shrink-0 ${note.pinned ? "text-neutral-600 dark:text-neutral-300" : "text-neutral-300 dark:text-neutral-600 hover:text-neutral-500 dark:hover:text-neutral-400"}`}
+        >
+          <svg width="13" height="13" viewBox="0 0 24 24" fill={note.pinned ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="12" y1="17" x2="12" y2="22" />
+            <path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z" />
+          </svg>
+        </button>
         {/* Attach button */}
         <button
           type="button"
           onClick={() => fileRef.current?.click()}
           title="Attach files"
-          className="text-neutral-300 hover:text-neutral-500 active:text-neutral-700 transition-colors cursor-pointer touch-manipulation shrink-0"
+          className="text-neutral-300 dark:text-neutral-600 hover:text-neutral-500 dark:hover:text-neutral-400 active:text-neutral-700 transition-colors cursor-pointer touch-manipulation shrink-0"
         >
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
             <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
@@ -218,7 +231,7 @@ export default function NoteEditor({ note, folders, onChange, onDelete, onMoveTo
         </button>
         <button
           onClick={onDelete}
-          className="text-neutral-300 hover:text-red-400 active:text-red-400 text-xs transition-colors cursor-pointer touch-manipulation shrink-0"
+          className="text-neutral-300 dark:text-neutral-600 hover:text-red-400 active:text-red-400 text-xs transition-colors cursor-pointer touch-manipulation shrink-0"
         >
           Delete
         </button>
@@ -226,18 +239,18 @@ export default function NoteEditor({ note, folders, onChange, onDelete, onMoveTo
 
       {/* Tags */}
       <div
-        className="flex flex-wrap items-center gap-1.5 px-4 py-2 md:px-8 border-b border-neutral-100 cursor-text min-h-[36px]"
+        className="flex flex-wrap items-center gap-1.5 px-4 py-2 md:px-8 border-b border-neutral-100 dark:border-neutral-800 cursor-text min-h-[36px]"
         onClick={() => tagRef.current?.focus()}
       >
         {tags.map((tag) => (
           <span
             key={tag}
-            className="inline-flex items-center gap-1 bg-neutral-100 text-neutral-500 text-xs px-2 py-0.5 rounded"
+            className="inline-flex items-center gap-1 bg-neutral-100 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 text-xs px-2 py-0.5 rounded"
           >
             {tag}
             <button
               onClick={(e) => { e.stopPropagation(); removeTag(tag); }}
-              className="text-neutral-300 hover:text-neutral-600 cursor-pointer leading-none"
+              className="text-neutral-300 dark:text-neutral-600 hover:text-neutral-600 dark:hover:text-neutral-300 cursor-pointer leading-none"
             >
               ×
             </button>
@@ -250,13 +263,13 @@ export default function NoteEditor({ note, folders, onChange, onDelete, onMoveTo
           onKeyDown={handleTagKeyDown}
           onBlur={addTag}
           placeholder={tags.length === 0 ? "Add tags…" : ""}
-          className="flex-1 min-w-[80px] text-xs text-neutral-500 outline-none placeholder-neutral-300 bg-transparent"
+          className="flex-1 min-w-[80px] text-xs text-neutral-500 dark:text-neutral-400 outline-none placeholder-neutral-300 dark:placeholder-neutral-600 bg-transparent"
         />
       </div>
 
       {/* Attachments */}
       {attachments.length > 0 && (
-        <div className="flex flex-wrap items-center gap-2 px-4 py-2.5 md:px-8 border-b border-neutral-100">
+        <div className="flex flex-wrap items-center gap-2 px-4 py-2.5 md:px-8 border-b border-neutral-100 dark:border-neutral-800">
           {attachments.map((a) => {
             const isImage = a.mimeType.startsWith("image/");
             return (
@@ -265,7 +278,7 @@ export default function NoteEditor({ note, folders, onChange, onDelete, onMoveTo
                   <button
                     type="button"
                     onClick={() => setPreview(a)}
-                    className="block w-11 h-11 rounded overflow-hidden bg-neutral-100 hover:opacity-75 transition-opacity cursor-pointer"
+                    className="block w-11 h-11 rounded overflow-hidden bg-neutral-100 dark:bg-neutral-800 hover:opacity-75 transition-opacity cursor-pointer"
                     title={`${a.name} (${formatSize(a.size)})`}
                   >
                     <img
@@ -278,7 +291,7 @@ export default function NoteEditor({ note, folders, onChange, onDelete, onMoveTo
                   <button
                     type="button"
                     onClick={() => setPreview(a)}
-                    className="flex items-center gap-1.5 bg-neutral-100 hover:bg-neutral-200 text-neutral-600 text-xs px-2.5 py-1.5 rounded cursor-pointer transition-colors max-w-[160px]"
+                    className="flex items-center gap-1.5 bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-600 dark:text-neutral-300 text-xs px-2.5 py-1.5 rounded cursor-pointer transition-colors max-w-[160px]"
                     title={`${a.name} (${formatSize(a.size)})`}
                   >
                     <FileIcon mimeType={a.mimeType} />
@@ -288,7 +301,7 @@ export default function NoteEditor({ note, folders, onChange, onDelete, onMoveTo
                 <button
                   type="button"
                   onClick={() => removeAttachment(a.id)}
-                  className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-white border border-neutral-200 text-neutral-400 hover:text-neutral-700 text-xs leading-none flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer shadow-sm"
+                  className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 text-xs leading-none flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer shadow-sm"
                   title="Remove"
                 >
                   ×

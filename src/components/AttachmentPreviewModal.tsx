@@ -55,25 +55,25 @@ export default function AttachmentPreviewModal({ attachment, onClose }: Props) {
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] flex flex-col overflow-hidden"
+        className="bg-white dark:bg-neutral-900 rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] flex flex-col overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-3 border-b border-neutral-100 shrink-0">
+        <div className="flex items-center justify-between px-5 py-3 border-b border-neutral-100 dark:border-neutral-800 shrink-0">
           <div className="min-w-0 mr-4">
-            <p className="text-sm font-medium text-neutral-800 truncate">{attachment.name}</p>
+            <p className="text-sm font-medium text-neutral-800 dark:text-neutral-200 truncate">{attachment.name}</p>
             <p className="text-xs text-neutral-400 mt-0.5">{formatSize(attachment.size)}</p>
           </div>
           <div className="flex items-center gap-4 shrink-0">
             <button
               onClick={download}
-              className="text-xs text-neutral-500 hover:text-neutral-800 transition-colors cursor-pointer"
+              className="text-xs text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200 transition-colors cursor-pointer"
             >
               Download
             </button>
             <button
               onClick={onClose}
-              className="text-neutral-300 hover:text-neutral-700 transition-colors cursor-pointer text-xl leading-none"
+              className="text-neutral-300 dark:text-neutral-600 hover:text-neutral-700 dark:hover:text-neutral-300 transition-colors cursor-pointer text-xl leading-none"
             >
               ×
             </button>
@@ -98,13 +98,13 @@ export default function AttachmentPreviewModal({ attachment, onClose }: Props) {
             />
           )}
           {isText && (
-            <pre className="text-xs text-neutral-700 font-mono whitespace-pre-wrap w-full leading-relaxed">
+            <pre className="text-xs text-neutral-700 dark:text-neutral-300 font-mono whitespace-pre-wrap w-full leading-relaxed">
               {decodeText(attachment.data)}
             </pre>
           )}
           {isAudio && (
             <div className="w-full flex flex-col items-center gap-6 py-10">
-              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#d4d4d4" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-neutral-300 dark:text-neutral-600">
                 <path d="M9 18V5l12-2v13" />
                 <circle cx="6" cy="18" r="3" />
                 <circle cx="18" cy="16" r="3" />
@@ -127,19 +127,20 @@ export default function AttachmentPreviewModal({ attachment, onClose }: Props) {
                 height="40"
                 viewBox="0 0 24 24"
                 fill="none"
-                stroke="#d4d4d4"
+                stroke="currentColor"
                 strokeWidth="1.5"
                 strokeLinecap="round"
                 strokeLinejoin="round"
+                className="text-neutral-300 dark:text-neutral-600"
               >
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
                 <polyline points="14 2 14 8 20 8" />
               </svg>
-              <p className="text-sm text-neutral-500">{attachment.name}</p>
-              <p className="text-xs text-neutral-300">{formatSize(attachment.size)}</p>
+              <p className="text-sm text-neutral-500 dark:text-neutral-400">{attachment.name}</p>
+              <p className="text-xs text-neutral-300 dark:text-neutral-600">{formatSize(attachment.size)}</p>
               <button
                 onClick={download}
-                className="text-sm text-neutral-700 border border-neutral-200 px-4 py-1.5 rounded hover:bg-neutral-50 transition-colors cursor-pointer"
+                className="text-sm text-neutral-700 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-700 px-4 py-1.5 rounded hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
               >
                 Download
               </button>
